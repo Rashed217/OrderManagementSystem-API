@@ -13,12 +13,12 @@ namespace OrderManagementSystem.Repositories
 
         public User GetByEmail(string email)
         {
-            return _context.Users.FirstOrDefault(u => u.Email == email);
+            return _context.Users.SingleOrDefault(u => u.Email == email);
         }
 
         public User GetById(int id)
         {
-            return _context.Users.FirstOrDefault(u => u.UID == id);
+            return _context.Users.SingleOrDefault(u => u.UID == id);
         }
 
         public void AddUser(User user)

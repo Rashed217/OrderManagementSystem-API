@@ -8,12 +8,12 @@ using System.Text;
 
 namespace OrderManagementSystem.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
-        private readonly UserRepository _userRepo;
+        private readonly IUserRepository _userRepo;
         private readonly IConfiguration _configuration;
 
-        public UserService(UserRepository userRepo, IConfiguration configuration)
+        public UserService(IUserRepository userRepo, IConfiguration configuration)
         {
             _userRepo = userRepo;
             _configuration = configuration;

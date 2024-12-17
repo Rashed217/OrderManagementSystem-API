@@ -8,9 +8,9 @@ namespace OrderManagementSystem.Controllers
     [Route("Api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UsersController(UserService userService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
         }
@@ -29,8 +29,8 @@ namespace OrderManagementSystem.Controllers
             }
         }
 
-        [HttpPost("Login")]
-        public IActionResult Login([FromBody] LoginDto model)
+        [HttpGet("Login")]
+        public IActionResult Login(LoginDto model)
         {
             try
             {

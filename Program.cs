@@ -1,5 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
+using OrderManagementSystem.Repositories;
+using OrderManagementSystem.Services;
 
 namespace OrderManagementSystem
 {
@@ -16,6 +18,10 @@ namespace OrderManagementSystem
             builder.Services.AddDbContext<AppDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
             // Add services to the container.
 
