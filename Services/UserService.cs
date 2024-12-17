@@ -72,7 +72,22 @@ namespace OrderManagementSystem.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-    }
 
-}
+        public User UpdateUser(UpdateUserDto model)
+        {
+            var existingUser = _userRepo.GetById(model.ID); // Fetch user by ID
+            if (existingUser == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            existingUser.Name = model.Name ?? existingUser.Name;
+            existingUser.Email = model.Email ?? existingUser.Email;
+            existingUser.Phone = model.Phone ?? existingUser.Phone;
+            existingUser.Role = model.Role ?? existingUser.Role;
+
+            _userRepo.UpdateUser(existingUser);
+            return existingUser;
+        }
+    }
 }

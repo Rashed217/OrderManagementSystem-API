@@ -42,5 +42,19 @@ namespace OrderManagementSystem.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("update")]
+        public IActionResult UpdateUser([FromBody] UpdateUserDto model)
+        {
+            try
+            {
+                var updatedUser = _userService.UpdateUser(model);
+                return Ok(updatedUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
