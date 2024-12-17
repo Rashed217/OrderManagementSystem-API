@@ -28,5 +28,20 @@ namespace OrderManagementSystem.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("search")]
+        public IActionResult GetProducts([FromQuery] ProductFilterDto filter)
+        {
+            try
+            {
+                var products = _productService.GetFilteredProducts(
+                    filter.Name, filter.MinPrice, filter.MaxPrice, filter.Page, filter.PageSize);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

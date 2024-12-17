@@ -32,6 +32,5 @@ namespace OrderManagementSystem.Repositories
             _context.Users.Update(user);
             _context.SaveChanges();
         }
-
     }
 }

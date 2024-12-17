@@ -33,5 +33,11 @@ namespace OrderManagementSystem.Services
             _productRepo.AddProduct(product);
             return product;
         }
+
+        public List<Product> GetFilteredProducts(string name, decimal minPrice, decimal maxPrice, int page, int pageSize)
+        {
+            return _productRepo.GetFilteredProducts(name, minPrice, maxPrice, page, pageSize);
+        }
     }
+
 }

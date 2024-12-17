@@ -25,5 +25,17 @@ namespace OrderManagementSystem.Repositories
             _context.Products.Add(product);
             _context.SaveChanges();
         }
+
+        public List<Product> GetFilteredProducts(string name, decimal minPrice, decimal maxPrice, int page, int pageSize)
+        {
+            return _context.Products
+                .Where(p => (string.IsNullOrEmpty(name) || p.Name.Contains(name)) &&
+                            (minPrice == 0 || p.Price >= minPrice) &&
+                            (maxPrice == 0 || p.Price <= maxPrice))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
     }
 }
