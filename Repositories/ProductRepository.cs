@@ -26,6 +26,19 @@ namespace OrderManagementSystem.Repositories
             _context.SaveChanges();
         }
 
+        public Product GetProductById(int id)
+        {
+            // Using EF Core to query the product by its ID
+            return _context.Products.SingleOrDefault(p => p.PID == id);
+        }
+
+        public void UpdateProduct(Product product)
+        {
+            _context.Products.Update(product);
+            _context.SaveChanges();
+        }
+
+
         public List<Product> GetFilteredProducts(string name, decimal minPrice, decimal maxPrice, int page, int pageSize)
         {
             return _context.Products
@@ -36,6 +49,5 @@ namespace OrderManagementSystem.Repositories
                 .Take(pageSize)
                 .ToList();
         }
-
     }
 }

@@ -34,6 +34,31 @@ namespace OrderManagementSystem.Services
             return product;
         }
 
+        public Product GetProductById(int id)
+        {
+            var product = _productRepo.GetProductById(id);
+            if (product == null)
+                throw new Exception("Product not found.");
+            return product;
+        }
+
+
+        public Product UpdateProduct(int id, ProductDto model)
+        {
+            var product = _productRepo.GetProductById(id);
+            if (product == null)
+                throw new Exception("Product not found.");
+
+            product.Name = model.Name;
+            product.Description = model.Description;
+            product.Price = model.Price;
+            product.Stock = model.Stock;
+
+            _productRepo.UpdateProduct(product);
+            return product;
+        }
+
+
         public List<Product> GetFilteredProducts(string name, decimal minPrice, decimal maxPrice, int page, int pageSize)
         {
             return _productRepo.GetFilteredProducts(name, minPrice, maxPrice, page, pageSize);
