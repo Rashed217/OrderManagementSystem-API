@@ -15,13 +15,27 @@ namespace OrderManagementSystem.Controllers
             _userService = userService;
         }
 
-        [HttpPost("register")]
+        [HttpPost("Register")]
         public IActionResult Register([FromBody] RegisterDto model)
         {
             try
             {
                 var user = _userService.Register(model);
                 return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] LoginDto model)
+        {
+            try
+            {
+                var token = _userService.Login(model);
+                return Ok(new { Token = token });
             }
             catch (Exception ex)
             {
