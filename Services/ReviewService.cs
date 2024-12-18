@@ -41,5 +41,32 @@ namespace OrderManagementSystem.Services
 
             return review;
         }
+
+        public Review UpdateReview(int reviewId, ReviewDto model, int userId)
+        {
+            // Retrieve the existing review
+            var existingReview = _reviewRepo.GetById(reviewId);
+            if (existingReview == null)
+                throw new Exception("Review not found.");
+
+            // Ensure that the review belongs to the user
+            if (existingReview.UserId != userId)
+                throw new Exception("You are not authorized to update this review.");
+
+            // Update the review details
+            existingReview.Rating = model.Rating;
+            existingReview.Comment = model.Comment;
+            existingReview.ReviewDate = DateTime.UtcNow; // Optionally update the review date
+
+            _reviewRepo.UpdateReview(existingReview);
+
+            // Recalculate the product's overall rating
+            var product = _productRepo.GetById(existingReview.ProductId);
+            product.OverallRating = _reviewRepo.GetReviewsByProductId(existingReview.ProductId)
+                .Average(r => r.Rating);
+            _productRepo.UpdateProduct(product);
+
+            return existingReview;
+        }
     }
 }

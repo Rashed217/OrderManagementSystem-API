@@ -22,6 +22,10 @@ namespace OrderManagementSystem
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
             // Add services to the container.
 

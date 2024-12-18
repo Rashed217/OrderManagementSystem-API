@@ -16,6 +16,11 @@ namespace OrderManagementSystem.Repositories
             _context.SaveChanges();
         }
 
+        public Review GetById(int reviewId)
+        {
+            return _context.Reviews.FirstOrDefault(r => r.RID == reviewId);
+        }
+
         public Review GetReviewByUserAndProduct(int userId, int productId)
         {
             return _context.Reviews.SingleOrDefault(r => r.UserId == userId && r.ProductId == productId);
@@ -26,6 +31,13 @@ namespace OrderManagementSystem.Repositories
             return _context.Reviews
                 .Where(r => r.ProductId == productId)
                 .ToList();
+        }
+
+        // Update an existing review
+        public void UpdateReview(Review review)
+        {
+            _context.Reviews.Update(review);
+            _context.SaveChanges();
         }
     }
 }
