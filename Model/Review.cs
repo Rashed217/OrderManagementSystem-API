@@ -12,7 +12,7 @@ namespace OrderManagementSystem.Model
         public int ProductId { get; set; }  // Foreign Key to Product
 
         [Required]
-        public int Rating { get; set; }  // Required, 1 to 5
+        public decimal Rating { get; set; }  // Required, 1 to 5
 
         public string Comment { get; set; }  // Optional
 
