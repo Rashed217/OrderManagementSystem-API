@@ -1,21 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OrderManagementSystem.DTO;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using OrderManagementSystem.Services;
+using OrderManagementSystem.Model;
+using OrderManagementSystem.DTO;
 
 namespace OrderManagementSystem.Controllers
 {
-    [ApiController]
-    [Route("Api/[controller]")]
-    public class UsersController : ControllerBase
+    [ApiController] // Indicates that this class is an API controller, which automatically handles model validation and other HTTP-related tasks.
+    [Route("api/[Controller]")] // Defines the route for the controller, where [Controller] will be replaced with the class name (in this case, "User").
+    public class UserController : ControllerBase
     {
+        // Declares the dependencies for the controller: IUserService for business logic and IConfiguration for accessing configuration settings.
         private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(IUserService userService)
+        // Constructor that initializes the dependencies through dependency injection.
+        public UserController(IUserService userService, IConfiguration configuration)
         {
             _userService = userService;
+            _configuration = configuration;
         }
 
-        [HttpPost("Register")]
+        // Action method for handling POST requests to add a new user.
+        [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDto model)
         {
             try
@@ -29,32 +39,55 @@ namespace OrderManagementSystem.Controllers
             }
         }
 
-        [HttpGet("Login")]
-        public IActionResult Login(LoginDto model)
+        // Action method for handling GET requests to log in a user.
+        [HttpGet("Login")] // Specifies that this method will handle HTTP GET requests.
+        public IActionResult login(string email, string password) // Accepts email and password as query parameters.
         {
-            try
+            // Calls the GetUser method from the injected IUserService to retrieve the user based on the provided email and password.
+            var user = _userService.GetUser(email, password);
+
+            if (user != null) // If the user is found, proceed to generate a JWT token.
             {
-                var token = _userService.Login(model);
-                return Ok(new { Token = token });
+                // Generates a JWT token for the user and returns it in the response.
+                string token = GenerateJwtToken(user.UID.ToString(), user.Name);
+                return Ok(token); // Returns the token if the login is successful.
             }
-            catch (Exception ex)
+            else
             {
-                return BadRequest(ex.Message);
+                // Returns a BadRequest response if the provided credentials are invalid.
+                return BadRequest("Invalid Credentials");
             }
         }
 
-        [HttpPut("update")]
-        public IActionResult UpdateUser([FromBody] UpdateUserDto model)
+        // NonAction attribute indicates that this method is not an action method for handling HTTP requests.
+        [NonAction]
+        public string GenerateJwtToken(string userId, string username)
         {
-            try
+            // Retrieves JWT settings from the configuration.
+            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var secretKey = jwtSettings["SecretKey"]; // Retrieves the secret key used for signing the JWT token.
+
+            // Defines the claims (user data) that will be included in the JWT token.
+            var claims = new[]
             {
-                var updatedUser = _userService.UpdateUser(model);
-                return Ok(updatedUser);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            new Claim(JwtRegisteredClaimNames.Sub, userId), // The subject of the token (user ID).
+            new Claim(JwtRegisteredClaimNames.UniqueName, username), // The unique name (username).
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // A unique identifier for the JWT token (Jti).
+        };
+
+            // Creates a symmetric security key using the secret key.
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); // Defines the signing credentials using HMAC SHA-256.
+
+            // Creates the JWT token with the defined claims and expiry time from the configuration.
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryInMinutes"])), // Expiry time in minutes retrieved from configuration.
+                signingCredentials: creds
+            );
+
+            // Converts the JWT token to a string and returns it.
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
