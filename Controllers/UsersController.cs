@@ -6,9 +6,11 @@ using System.Text;
 using OrderManagementSystem.Services;
 using OrderManagementSystem.Model;
 using OrderManagementSystem.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OrderManagementSystem.Controllers
 {
+    [Authorize]
     [ApiController] // Indicates that this class is an API controller, which automatically handles model validation and other HTTP-related tasks.
     [Route("api/[Controller]")] // Defines the route for the controller, where [Controller] will be replaced with the class name (in this case, "User").
     public class UserController : ControllerBase
@@ -24,8 +26,9 @@ namespace OrderManagementSystem.Controllers
             _configuration = configuration;
         }
 
+        [AllowAnonymous]
         // Action method for handling POST requests to add a new user.
-        [HttpPost("register")]
+        [HttpPost("Register")]
         public IActionResult Register([FromBody] RegisterDto model)
         {
             try
@@ -39,6 +42,7 @@ namespace OrderManagementSystem.Controllers
             }
         }
 
+        [AllowAnonymous]
         // Action method for handling GET requests to log in a user.
         [HttpGet("Login")] // Specifies that this method will handle HTTP GET requests.
         public IActionResult login(string email, string password) // Accepts email and password as query parameters.
@@ -88,6 +92,40 @@ namespace OrderManagementSystem.Controllers
 
             // Converts the JWT token to a string and returns it.
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        // Endpoint to update user information
+        [HttpPut("update/{email}")]
+        public IActionResult UpdateUser(string email, [FromBody] UpdateUserDto model)
+        {
+            try
+            {
+                var updatedUser = _userService.UpdateUser(email, model);
+                return Ok(updatedUser); // Return the updated user
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); // Return error message if something goes wrong
+            }
+        }
+
+        // Delete user by email
+        [HttpDelete("{email}")]
+        public IActionResult DeleteUser(string email)
+        {
+            try
+            {
+                var result = _userService.DeleteUser(email); // Call DeleteUser method from UserService
+                if (result)
+                {
+                    return Ok(new { message = "User deleted successfully." }); // Return success response
+                }
+                return NotFound(new { message = "User not found." }); // If user not found
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message }); // If an exception occurs
+            }
         }
     }
 }

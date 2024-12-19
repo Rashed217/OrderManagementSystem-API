@@ -37,5 +37,19 @@ namespace OrderManagementSystem.Repositories
                 .Where(u => u.Email == email && u.Password == password)
                 .FirstOrDefault();
         }
+
+        public void UpdateUser(User user)
+        {
+            // Attach the user and mark it as modified
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
+
+        // New method to delete a user
+        public void DeleteUser(User user)
+        {
+            _context.Users.Remove(user); // Remove the user from the database
+            _context.SaveChanges(); // Commit the changes to the database
+        }
     }
 }

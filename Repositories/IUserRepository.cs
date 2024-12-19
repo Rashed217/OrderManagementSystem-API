@@ -8,5 +8,7 @@ namespace OrderManagementSystem.Repositories
         User GetByEmail(string email);
         User GetById(int id);
         User GetUser(string email, string password);
+        void UpdateUser(User user);
+        void DeleteUser(User user);
     }
 }
